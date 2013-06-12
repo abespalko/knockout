@@ -46,12 +46,20 @@
 				<div data-bind="text: first_name"></div>
 				<div data-bind="text: last_name"></div>
 				<div data-bind="text: relation"></div>
+				Friend of:
+				<a data-bind="attr:{href: 'http://vk.com/id' + friendOf}" target="_blank">
+					<span data-bind="text: friendOf"></span>
+				</a>
 			</div>
 		</div>
 	</div>
 
 	<div class="statistic">
 		<h3 class="total">Total friends: <span data-bind="text: total_friends()"></span></h3>
+
+		<h3 class="total" data-bind="foreach: friend_ids">Total friends of:
+			<span data-bind="text: total_friends_of()"></span>
+		</h3>
 		<button class="more-friends" data-bind="click: getMoreFriends">Get more friends</button>
 	</div>
 

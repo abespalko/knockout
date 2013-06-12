@@ -1,10 +1,11 @@
-function UserProfile(user) {
+function UserProfile(user, friendOf) {
 	var self = this;
 	self.uid = user.uid;
 	self.first_name = user.first_name;
 	self.last_name = user.last_name;
 	self.photo = user.photo;
 	self.relation = user.relation;
+	self.friendOf = friendOf;
 }
 
 function Error(code, message) {
@@ -19,6 +20,7 @@ function GirlFriendsViewModel() {
 	self.offset = 0;
 	self.count = 0;
 	self.friend_ids = [];
+	self.friend_handler = 0;
 	self.errors = ko.observableArray([
 
 	]);
@@ -39,6 +41,7 @@ function GirlFriendsViewModel() {
 		VK.Api.call(
 			'friends.get',
 			{
+				uid: self.friend_handler,
 				fields: 'sex, photo',
 				count: self.count,
 				offset: self.offset,
@@ -66,11 +69,33 @@ function GirlFriendsViewModel() {
 							},
 							getFriendsOfFriends
 						)*/
-						self.friends.push(new UserProfile(val));
-						if ((self.friends().length % 20) == 0) {
+						self.friends.push(new UserProfile(val, self.friend_handler));
+						if (self.friends().length == 189) {
+							var a=1;
+						}
+						if ((self.friends().length % 50) == 0) {
 							self.offset += parseInt(key);
 							return
 						}
+
+					}
+
+					// If it was last iteration we will make new request for friends recursively
+					if (data.response.length == (last=parseInt(key)+1)) {
+						self.friend_handler = self.friend_ids.shift();
+						self.offset = 0;
+						VK.Api.call(
+							'friends.get',
+							{
+								uid: self.friend_handler,
+								fields: 'sex, photo',
+								count: self.count,
+								offset: self.offset,
+								order: 'name'
+							},
+							getUserProfileDataCallback
+						)
+
 					}
 				}
 
@@ -98,6 +123,10 @@ function GirlFriendsViewModel() {
 	}
 
 	self.total_friends = function() {
+		return self.friends().length;
+	}
+
+	self.total_friends_of = function() {
 		return self.friends().length;
 	}
 
