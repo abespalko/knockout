@@ -1,0 +1,43 @@
+.friends {
+	float:left;
+}
+
+.people_row .img {
+	float:left;
+}
+
+.people_row {
+	padding: 10px 0;
+	border-bottom: 1px solid grey;
+	clear: both;
+	float: left;
+}
+.info {
+	padding-left: 10px;
+	float: left;
+
+}
+
+.info div {
+	width: 300px;
+}
+
+.statistic {
+	position: fixed;
+	margin-left: 450px;
+}
+
+.total {
+	padding: 10px 0;
+}
+
+.error {
+	float:left;
+	clear: both;
+	color: red;
+}
+
+#login_button {
+	width: 50px;
+	height: 10px;
+}
