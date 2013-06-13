@@ -71,14 +71,10 @@ function GirlFriendsViewModel() {
 					if (val.sex == 1) {
 						self.friend_ids.push(val.uid);
 						self.friends.push(new UserProfile(val, self.friend_handler));
-						if (self.friends().length == 189) {
-							var a=1;
-						}
 						if ((self.friends().length % 50) == 0) {
 							self.offset += parseInt(key);
 							return
 						}
-
 					}
 
 					// If it was last iteration we will make new request for friends recursively
@@ -96,11 +92,12 @@ function GirlFriendsViewModel() {
 							},
 							getUserProfileDataCallback
 						)
-
 					}
 				}
-
-
+			}
+			else {
+				self.friend_handler = self.friend_ids.shift();
+				self.offset = 0;
 			}
 		}
 		else {
@@ -115,6 +112,17 @@ function GirlFriendsViewModel() {
 	self.total_friends_of = function() {
 		return self.friends().length;
 	}
+
+	self.totalDirectFriends = ko.computed(function() {
+		var total = 0;
+		for (var i = 0; i < self.friends().length; i++) {
+			if (self.friends()[i].friendOf() == 'mine') {
+				total++;
+			}
+		}
+		return total;
+	});
+
 
 	/*function getFriendsOfFriends(data) {
 		self.requests += 1;

@@ -17,6 +17,15 @@ describe("GirlFriendsModel", function() {
 
 	});
 
+	it("Mock data from VK", function() {
+		var user = new UserProfile({uid: 10662779, first_name: 'Михаил', last_name: 'Филатов', photo: '', relation: 1});
+		expect(user).toEqual(jasmine.any(Object));
+
+	});
+
+
+
+
 	xdescribe("when song has been paused", function() {
 		beforeEach(function() {
 			player.play(song);
