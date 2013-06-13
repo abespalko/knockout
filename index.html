@@ -2,8 +2,9 @@
 <head>
 
 <script type='text/javascript' src='js/knockout-2.2.1.js'></script>
-<script type='text/javascript' src='js/index.js'></script>
 <script src="http://vk.com/js/api/openapi.js" type="text/javascript"></script>
+<script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+
 <link type="text/css" rel="stylesheet" href="css/main.css">
 
 </head>
@@ -26,6 +27,18 @@
 	VK.Auth.getLoginStatus(authInfo);
 	VK.UI.button('login_button');
 
+	/*$(window).scroll(function () {
+		var doc = $(document).height();
+		var win  = $(window).height();
+		var diff = $(document).height() - $(window).height();
+
+		var el = document.getElementById('show_more');
+		var pos = el.offsetTop;
+		var cur_pos = $(window).scrollTop();
+		if (parseInt($(window).scrollTop()) + 600 >=  pos) {
+			GirlFriendsViewModel.getMoreFriends();
+		}
+	})*/
 </script>
 	<div data-bind="visible: errors().length > 0, foreach: errors">
 		<div class="error">
@@ -34,7 +47,7 @@
 		</div>
 	</div>
 
-	<div class="friends" data-bind="foreach: friends">
+	<div class="friends" data-bind="foreach: friends, event: {scroll: getMoreFriends}">
 		<div class="people_row">
 			<div class="img">
 				<a data-bind="attr:{href: 'http://vk.com/id' + uid}" target="_blank">
@@ -47,11 +60,15 @@
 				<div data-bind="text: last_name"></div>
 				<div data-bind="text: relation"></div>
 				Friend of:
-				<a data-bind="attr:{href: 'http://vk.com/id' + friendOf}" target="_blank">
-					<span data-bind="text: friendOf"></span>
+				<a data-bind="attr:{href: friendOfUrl()}" target="_blank">
+					<span data-bind="text: friendOf()"></span>
 				</a>
 			</div>
 		</div>
+	</div>
+	<div id="show_more" style="position: relative; clear: both; float: left;">
+
+
 	</div>
 
 	<div class="statistic">
@@ -64,5 +81,6 @@
 	</div>
 
 <script type='text/javascript' src='js/GirlFriendsModel.js'></script>
+
 </body>
 </html>

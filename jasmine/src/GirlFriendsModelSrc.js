@@ -30,22 +30,23 @@ function GirlFriendsViewModel() {
 	self.count = 0;
 	self.friend_ids = [];
 	self.friend_handler = 0;
-	self.errors = ko.observableArray([
-
-	]);
-
 	self.friends = ko.observableArray([
 
 	]);
 
 	self.relations = [{
-		relation: "Standard (sandwich)", price: 0
+		0: 'In love'
+		// Will be soon
 	}];
+
+	self.errors = ko.observableArray([
+
+	]);
+
 
 	self.vkLogin = function() {
 		VK.Auth.login(authInfo, 1026);
 	};
-
 
 	self.getMoreFriends = function() {
 		VK.Api.call(
@@ -68,6 +69,7 @@ function GirlFriendsViewModel() {
 
 				for (var key in data.response) {
 					var val = data.response[key];
+					// sex=1 - Female; sex=2 - Male
 					if (val.sex == 1) {
 						self.friend_ids.push(val.uid);
 						self.friends.push(new UserProfile(val, self.friend_handler));
@@ -116,44 +118,6 @@ function GirlFriendsViewModel() {
 		return self.friends().length;
 	}
 
-	/*function getFriendsOfFriends(data) {
-		self.requests += 1;
-		if (data.response && data.response.length > 0) {
-			for (var key in data.response) {
-				var val = data.response[key];
-				if (val.sex == 1) {
-					self.friend_ids.push(val.uid);
-				}
-			}
-		}
-	}*/
-
 }
 
-/*var ScrolledModel = {
-	items: ko.observableArray([]),
-	scrolled: function(data, event) {
-		var elem = event.target;
-		if (elem.scrollTop > (elem.scrollHeight - elem.offsetHeight - 200)) {
-			getItems(20);
-		}
-	},
-	maxId: 0,
-	pendingRequest: ko.observable(false)
-};*/
-
-ko.applyBindings(new GirlFriendsViewModel());
-
-$(window).scroll(function () {
-	var doc = $(document).height();
-	var win  = $(window).height();
-	var diff = $(document).height() - $(window).height();
-
-	var el = document.getElementById('show_more');
-	var pos = el.offsetTop;
-	var cur_pos = $(window).scrollTop();
-	if (parseInt($(window).scrollTop()) + 1200 >=  pos) {
-		$('button.more-friends').trigger('click');
-	}
-})
 
