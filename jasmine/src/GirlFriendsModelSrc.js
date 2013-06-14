@@ -69,7 +69,7 @@ function GirlFriendsViewModel() {
 
 				for (var key in data.response) {
 					var val = data.response[key];
-					// sex=1 - Female; sex=2 - Male
+					// sex==1 - Female; sex==2 - Male
 					if (val.sex == 1) {
 						self.friend_ids.push(val.uid);
 						self.friends.push(new UserProfile(val, self.friend_handler));
@@ -101,8 +101,6 @@ function GirlFriendsViewModel() {
 
 					}
 				}
-
-
 			}
 		}
 		else {

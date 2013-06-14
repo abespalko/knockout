@@ -1,49 +1,42 @@
 <html>
 <head>
+	<meta http-equiv='Content-Type' content='text/html; charset=utf-8'>
+	<script type='text/javascript' src='js/knockout-2.2.1.js'></script>
+	<script src="http://vk.com/js/api/openapi.js" type="text/javascript"></script>
+	<script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
 
-<script type='text/javascript' src='js/knockout-2.2.1.js'></script>
-<script src="http://vk.com/js/api/openapi.js" type="text/javascript"></script>
-<script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
-
-<link type="text/css" rel="stylesheet" href="css/main.css">
+	<link type="text/css" rel="stylesheet" href="css/main.css">
 
 </head>
 <body>
-<div id="login_button" data-bind="click: vkLogin"></div>
-<script language="javascript">
+<div>
 
-	VK.init({
-		apiId: 3704235
-	});
+</div>
 
-
-	function authInfo(response) {
-		if (response.session) {
-
-		} else {
-			alert('not auth');
-		}
-	}
-	VK.Auth.getLoginStatus(authInfo);
-	VK.UI.button('login_button');
-
-	/*$(window).scroll(function () {
-		var doc = $(document).height();
-		var win  = $(window).height();
-		var diff = $(document).height() - $(window).height();
-
-		var el = document.getElementById('show_more');
-		var pos = el.offsetTop;
-		var cur_pos = $(window).scrollTop();
-		if (parseInt($(window).scrollTop()) + 600 >=  pos) {
-			GirlFriendsViewModel.getMoreFriends();
-		}
-	})*/
-</script>
+<div id="openapi_header">
+	<div id="openapi_block" style="display: block;">
+		<div id="openapi_userpic">
+			<a href="/id10662779" id="openapi_userlink"><img src="http://cs425222.vk.me/v425222779/a42/ZfLA8kn1mGU.jpg" id="openapi_userphoto"></a>
+		</div>
+		<div id="openapi_profile">
+			<div id="openapi_greeting">
+				Hi,
+				<span id="openapi_user"></span>
+			</div>
+			<div id="openapi_actions">
+				<div id="login_button" data-bind="click: doLogin"></div>
+				<span id="logout_button" data-bind="click: doLogout">Logout</span>
+			</div>
+		</div>
+	</div>
+	<div id="openapi_title">Пример сайта<p style="margin:3px 0px 0px; font-size: 11px;color:#CDD9E4">Использование <span style="color:#FFF">Open API</span> ВКонтакте</p></div>
+	<div style="clear:both;"></div>
+</div>
+<div id="wrapper">
 	<div data-bind="visible: errors().length > 0, foreach: errors">
 		<div class="error">
-			Error code: <span data-bind="text: code"></span>
-			Error message:<span data-bind="text: message"></span>
+			Error code: <span data-bind="text: error_code"></span>
+			Error message:<span data-bind="text: error_msg"></span>
 		</div>
 	</div>
 
@@ -58,11 +51,12 @@
 			<div class="info">
 				<div data-bind="text: first_name"></div>
 				<div data-bind="text: last_name"></div>
-				<div data-bind="text: relation"></div>
+				<!--div data-bind="text: relation"></div-->
+				Followers: <span data-bind="text: followers_count" style="color: red;"></span>
 				Friend of:
-				<a data-bind="attr:{href: friendOfUrl()}" target="_blank">
+				<!--a data-bind="attr:{href: friendOfUrl()}" target="_blank">
 					<span data-bind="text: friendOf()"></span>
-				</a>
+				</a-->
 			</div>
 		</div>
 	</div>
@@ -72,15 +66,22 @@
 	</div>
 
 	<div class="statistic">
-		<h3 class="total">Total friends: <span data-bind="text: total_friends()"></span></h3>
-		<h3 class="total">Total my direct friends: <span data-bind="text: totalDirectFriends()"></span></h3>
+		<h3 class="total">
+			Total friends:
+			<span class="number" data-bind="text: total_friends()"></span>
+		</h3>
+		<h3 class="total">
+			Total my direct friends:
+			<span class="number" data-bind="text: totalDirectFriends()"></span>
+		</h3>
 
-		<h3 class="total" data-bind="foreach: friend_ids">Total friends of:
+		<h3 class="total" data-bind="foreach: friendIds">
+			Total friends of:
 			<span data-bind="text: total_friends_of()"></span>
 		</h3>
 		<button class="more-friends" data-bind="click: getMoreFriends">Get more friends</button>
 	</div>
-
+</div>
 <script type='text/javascript' src='js/GirlFriendsModel.js'></script>
 
 </body>

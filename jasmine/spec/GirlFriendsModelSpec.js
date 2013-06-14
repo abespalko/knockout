@@ -3,11 +3,15 @@ describe("GirlFriendsModel", function() {
 
 	beforeEach(function() {
 		GirlFriendsModel = new GirlFriendsViewModel;
+		user = new UserProfile({uid: 10662779, first_name: 'Михаил', last_name: 'Филатов', photo: '', relation: 1});
 	});
 
-	it("should be defined", function() {
+	it("Data model should be defined", function() {
 
 		expect(GirlFriendsModel).toBeDefined();
+		expect(GirlFriendsModel.count).toBeDefined();
+		expect(GirlFriendsModel.friends).toBeDefined();
+		expect(GirlFriendsModel.offset).toBeDefined();
 
 	});
 
@@ -17,10 +21,12 @@ describe("GirlFriendsModel", function() {
 
 	});
 
-	it("Mock data from VK", function() {
-		var user = new UserProfile({uid: 10662779, first_name: 'Михаил', last_name: 'Филатов', photo: '', relation: 1});
-		expect(user).toEqual(jasmine.any(Object));
+	it("ViewModel has data", function() {
+		GirlFriendsModel.friends.push(user);
 
+		expect(GirlFriendsModel.friends().length).toBeGreaterThan(0);
+		expect(GirlFriendsModel.total_friends()).toBeGreaterThan(0);
+		expect(GirlFriendsModel.total_friends_of()).toBeGreaterThan(0);
 	});
 
 

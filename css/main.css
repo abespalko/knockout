@@ -1,3 +1,9 @@
+body {
+	margin: 0;
+	padding: 0;
+
+}
+
 .friends {
 	float:left;
 }
@@ -27,6 +33,10 @@
 	margin-left: 450px;
 }
 
+.statistic .number {
+	color: red;
+}
+
 .total {
 	padding: 10px 0;
 }
@@ -35,4 +45,24 @@
 	float:left;
 	clear: both;
 	color: red;
+}
+
+#logout_button:hover {
+	text-decoration: underline;
+	cursor: pointer;
+}
+
+#openapi_header {
+	background-color: #45719B;
+	color: #FFF;
+	margin: 0 auto;
+	padding: 0 11px;
+	width: 700px;
+}
+
+#openapi_block {
+	display: none;
+	float: right;
+	width: 300px;
+	padding-top: 2px;
 }
