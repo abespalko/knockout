@@ -1,28 +1,39 @@
 ko.observableArray.fn.binarySearch = function(find, field, comparator) {
 	var
 		low = 0,
-		high = this.length - 1,
+		high = this().length - 1,
 		i,
 		comparison;
-		target = this;
-		target.index = {};
+    var users = ko.utils.unwrapObservable(this);
+	if (users.length == 0) high = 0;
 
-	if (this.length == 0) high = 0;
-	var users = ko.utils.unwrapObservable(this);
+    //var users = this.unique();
 
 	while (low <= high) {
 		i = Math.floor((low + high) / 2);
 		comparison = comparator(users[i], users[i+1], field, find);
 
-		if (comparison == 2) { return null; };
-		if (comparison > 0 && high == 0) return i;
+		if (comparison == 2) return i+1;
+		if (comparison > 0 && high <= 0) return i;
 		if (comparison < 0) { low = i + 1; continue; };
 		if (comparison > 0) { high = i - 1; continue; };
-		return i+1;
+
+        return i+1;
 	}
 	return null;
 };
 
+ko.observableArray.fn.unique = function() {
+    var self = ko.utils.unwrapObservable(this);
+    var o = {}, i, l = self.length, r = [];
+    for(i=0; i<l;i+=1) {
+        o[self[i]['uid']] = self[i];
+    }
+    for(i in o) {
+        r.push(o[i]);
+    }
+    return r;
+};
 /*ko.observableArray.fn.distinct = function(prop) {
 	var target = this;
 	target.index = {};
@@ -126,10 +137,9 @@ function GirlFriendsViewModel() {
 		return self.friends().length;
 	}
 
+   	self.getMoreFriends = function() {
 
-	self.getMoreFriends = function() {
-
-		VK.Api.call(
+        VK.Api.call(
 			'friends.get',
 			{
 				uid: self.friendPointer,
@@ -140,7 +150,6 @@ function GirlFriendsViewModel() {
 			},
 			getUserProfileDataCallback
 		)
-
 
 	};
 
@@ -169,25 +178,10 @@ function GirlFriendsViewModel() {
 						self.friends.splice(position, 0, val);
 					}
 
-
-					//self.friends.push(val);
-
 					// We have pulled another 50 friends so lets sort them and exit
 					if ((self.friends().length % 50) == 0) {
 
 						self.offset += key;
-
-
-
-						/*self.friends.sort(function(a, b) {
-							var x = a['followers_count'];
-							var y = b['followers_count'];
-							return ((x > y) ? -1 : ((x < y) ? 1 : 0));
-						});
-*/
-						// We leave only the unique values
-						//self.friends().unique();
-
 						return
 					}
 				}
