@@ -4,14 +4,21 @@ ko.observableArray.fn.binarySearch = function(find, field, comparator) {
 		high = this().length - 1,
 		i,
 		comparison;
-    var users = ko.utils.unwrapObservable(this);
-	if (users.length == 0) high = 0;
+    var collection = ko.utils.unwrapObservable(this);
+	if (collection.length == 0) high = 0;
 
 	while (low <= high) {
 		i = Math.floor((low + high) / 2);
-		comparison = comparator(users[i], users[i+1], field, find);
+		comparison = comparator(collection[i], collection[i+1], field, find[field]);
 
-		if (comparison == 2) return i+1;
+		// If the fields are equal check if second parameter of object (F.x. id, uid, user_id... ) are equal too
+		if (comparison == 2) {
+			var a = collection[i].user_id;
+			if (find.user_id == collection[i].user_id || (typeof collection[i+1] !== 'undefined' && find.user_id == collection[i+1].user_id)) {
+				return null;
+			}
+			return i+1;
+		}
 		if (comparison > 0 && high <= 0) return i;
 		if (comparison < 0) { low = i + 1; continue; };
 		if (comparison > 0) { high = i - 1; continue; };
@@ -113,7 +120,7 @@ function GirlFriendsViewModel() {
 
 					self.friendIds.push(val.uid);
 
-					var position = self.friends.binarySearch(val.followers_count, 'followers_count', binarySearchCallback);
+					var position = self.friends.binarySearch(val, 'followers_count', binarySearchCallback);
 
 					if (position != null) {
 						self.friends.splice(position, 0, val);
@@ -122,7 +129,7 @@ function GirlFriendsViewModel() {
 					// We have pulled another 50 friends so lets sort them and exit
 					if ((self.friends().length % 50) == 0) {
 
-						self.offset += key;
+						self.offset += key+1;
 						return
 					}
 				}
