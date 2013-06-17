@@ -11,10 +11,11 @@ ko.observableArray.fn.binarySearch = function(find, field, comparator) {
 		i = Math.floor((low + high) / 2);
 		comparison = comparator(collection[i], collection[i+1], field, find[field]);
 
-		// If the fields are equal check if second parameter of object (F.x. id, uid, user_id... ) are equal too
+		// If the fields are equal check if the second parameter of object (F.x. id, uid, user_id... ) are equal too
 		if (comparison == 2) {
-			var a = collection[i].user_id;
-			if (find.user_id == collection[i].user_id || (typeof collection[i+1] !== 'undefined' && find.user_id == collection[i+1].user_id)) {
+			if (find.user_id == collection[i].user_id ||
+				(typeof collection[i+1] !== 'undefined' && find.user_id == collection[i+1].user_id)) {
+
 				return null;
 			}
 			return i+1;
@@ -45,17 +46,6 @@ function binarySearchCallback(x, y, field, value) {
     return ((x[field] > value) ? ((value > y[field]) ? 0 : -1) : 1);
 };
 
-ko.observableArray.fn.unique = function() {
-    var self = ko.utils.unwrapObservable(this);
-    var o = {}, i, l = self.length, r = [];
-    for(i=0; i<l;i+=1) {
-        o[self[i]['uid']] = self[i];
-    }
-    for(i in o) {
-        r.push(o[i]);
-    }
-    return r;
-};
 
 function Error(code, message) {
 	var self = this;
@@ -80,10 +70,6 @@ function GirlFriendsViewModel() {
 	self.relations = [{
 		relation: ""
 	}];
-
-	self.total_friends = function() {
-		return self.friends().length;
-	}
 
    	self.getMoreFriends = function() {
 
@@ -170,7 +156,7 @@ function VKViewModel() {
 	var self = this;
 	var baseURL = window.location.protocol + '//' + window.location.hostname + window.location.pathname;
 
-    self.currentUserId = ko.observable();
+    self.currentUser = ko.observable();
 
     self.init = ko.computed(function () {
 
@@ -180,7 +166,7 @@ function VKViewModel() {
 
 		function authInfo(response) {
 			if (response.session) {
-                self.currentUserId(response.session.mid);
+                self.currentUser(response.session.mid);
 			} else {
 				alert('not auth');
 			}
@@ -192,13 +178,14 @@ function VKViewModel() {
 
 	self.doLogin = function() {
 		VK.Auth.login(function(response) {
-            window.location = baseURL;
+			self.currentUser(response.session.user.id);
         }, VK.access.FRIENDS);
 	};
 
 	self.doLogout = function() {
 		VK.Auth.logout(function(response) {
 			window.location = baseURL;
+			//self.currentUser(null);
 		});
 	};
 
@@ -216,10 +203,18 @@ function VKViewModel() {
      }, self);*/
 
 }
+ko.bindingHandlers.stopBinding = {
+	init: function() {
+		return { controlsDescendantBindings: true };
+	}
+};
 
-ko.applyBindings(new GirlFriendsViewModel(), document.getElementById('wrapper'));
-ko.applyBindings(new VKViewModel(), document.getElementById('openapi_header'));
+$(document).ready(function () {
 
+	ko.applyBindings(new GirlFriendsViewModel(), document.html);
+	ko.applyBindings(new VKViewModel(), document.getElementById('openapi_block'));
+
+});
 
 
 
@@ -229,6 +224,7 @@ $(window).scroll(function () {
 	var pos = el.offsetTop;
 	if (parseInt($(window).scrollTop()) + 1200 >=  pos) {
 		$('button.more-friends').trigger('click');
+		$('#show_more_progress').show();
 	}
 
 });
