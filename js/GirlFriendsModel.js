@@ -61,10 +61,9 @@ function GirlFriendsViewModel() {
 	self.count = 0;
 	self.friendIds = [];
 	self.friendPointer = 0;
-	//self.isUserLogged = ko.observable();
 	self.errors = ko.observableArray([]);
-
 	self.friends = ko.observableArray([]);
+	self.cachedGirls = [];
 
 	self.relations = ko.observableArray([
 		{ status: 0, relation: "не указан" },
@@ -80,7 +79,6 @@ function GirlFriendsViewModel() {
 	self.relationSearch = ko.observable();
 
 	self.filteredFriends = ko.computed(function() {
-		//return self.friends();
 		return ko.utils.arrayFilter(self.friends(), function(item) {
 			var a =  self.relations()[item.relation];
 			if (typeof self.relationSearch() != 'undefined') {
@@ -95,102 +93,102 @@ function GirlFriendsViewModel() {
 		for (var key in self.relations()) {
 			if (self.relations()[key].status == status) {
 				return self.relations()[key].relation;
-			};
+			}
+		}
+	};
+
+   	self.getMoreFriends = function() {
+	    getMoreFriends();
+	};
+
+	function displayPage(items) {
+		var i, j;
+		for (i = 0;  i < items; i++) {
+			var friend = self.cachedGirls.shift();
+			var position = self.friends.binarySearch(friend, 'followers_count', binarySearchCallback);
+
+			if (position != null) {
+				self.friends.splice(position, 0, friend);
+			}
+			else {
+				console.log(friend.uid + ' = ' + friend.last_name);
+			}
+		}
+	}
+
+	var getFriendsClosure = function() {
+		var offset = 0;
+
+		return function getFriendsFromVK() {
+			if (self.cachedGirls.length < 50) {
+				VK.Api.call(
+					'friends.get',
+					{
+						uid     : self.friendPointer,
+						fields  : 'sex, photo, followers_count, relation',
+						count   : self.count,
+						offset  : 0,
+						order   : 'name'
+					},
+					function(data) {
+						getUserProfileDataCallback(data);
+						displayPage(50);
+					})
+			}
+			else {
+				displayPage(50);
+			}
+
+
 		}
 
 	};
 
-	var bar = function(offset_tmp) {
-		var offset_tmp = 0;
-		return function () {
-				VK.Api.call(
-					'friends.get',
-					{
-						uid: self.friendPointer,
-						fields: 'sex, photo, followers_count, relation',
-						count: self.count,
-						offset: self.offset,
-						order: 'name'
-					},
-					function (data) {
-						offset_tmp = getUserProfileDataCallback(data, offset_tmp);
-					}
-				)
-			}
+	var getMoreFriends = getFriendsClosure(0);
 
-	};
-	var a = bar();
-
-
-   	self.getMoreFriends = function() {
-	    a(0);
-        /*VK.Api.call(
-			'friends.get',
-			{
-				uid: self.friendPointer,
-				fields: 'sex, photo, followers_count, relation',
-				count: self.count,
-				offset: self.offset,
-				order: 'name'
-			},
-			getUserProfileDataCallback
-		)*/
-
-	};
-
-	function getUserProfileDataCallback(data, offset_tmp) {
+	function getUserProfileDataCallback(data) {
 
 		if (data.error) {
 			self.errors.push(data.error);
-			self.offset = 0;
-			offset_tmp = 0;
-			return offset_tmp;
+			offset = 0;
+			return offset;
 		}
 
 		if (data.response && data.response.length > 0) {
 
 			for (var key in data.response) {
 				key = parseInt(key);
-				var val = data.response[key];
+				var friend = data.response[key];
 
-				if (val.deactivated !== undefined && (val.deactivated == 'banned' || val.deactivated == 'deleted')) continue;
+				if (typeof friend.deactivated !== 'undefined' && (friend.deactivated == 'banned' || friend.deactivated == 'deleted'))
+					continue;
 
-				if (val.sex == 1) {
+				if (friend.sex == 1) {
+					self.cachedGirls.push(friend);
+					self.friendIds.push(friend.uid);
 
-					var position = self.friends.binarySearch(val, 'followers_count', binarySearchCallback);
-
-					if (position != null) {
-						self.friendIds.push(val.uid);
-						self.friends.splice(position, 0, val);
-					}
-
-					// We have pulled another 50 friends
-					if ((self.friends().length % 50) == 0) {
-
+					// If we have pulled another 50 friends
+					/*if ((self.friends().length % 50) == 0) {
 						self.offset += key+1;
-						offset_tmp += key+1;
-						return offset_tmp;
-					}
+						offset += key+1;
+						return offset;
+					}*/
 				}
 
 				// If it was last iteration we will make new request for friends recursively
 				if (data.response.length == (last=key+1)) {
 
 					self.friendPointer = self.friendIds.shift();
-					self.offset = 0;
-					offset_tmp = 0;
-					//var b = bar(0);
-					var offset_second = a(0);
-					return offset_tmp;
+					//var getMoreFriends = getFriendsClosure(offset);
+					//getMoreFriends();
+					return;
 				}
 			}
-
 		}
 		else {
 			self.friendPointer = self.friendIds.shift();
-			self.offset = 0;
-			offset_tmp = 0;
-			return offset_tmp;
+			offset = 0;
+			return offset;
 		}
 
 	}
