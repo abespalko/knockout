@@ -56,6 +56,7 @@ function Error(code, message) {
 function GirlFriendsViewModel() {
 
 	var self = this;
+
 	self.offset = 0;
 	self.count = 0;
 	self.friendIds = [];
@@ -65,33 +66,85 @@ function GirlFriendsViewModel() {
 
 	self.friends = ko.observableArray([]);
 
+	self.relations = ko.observableArray([
+		{ status: 0, relation: "не указан" },
+		{ status: 1, relation: "не замужем" },
+		{ status: 2, relation: "есть друг" },
+		{ status: 3, relation: "помолвлена" },
+		{ status: 4, relation: "замужем" },
+		{ status: 5, relation: "всё сложно" },
+		{ status: 6, relation: "в активном поиске" },
+		{ status: 7, relation: "влюблена" }
+	]);
 
+	self.relationSearch = ko.observable();
 
-	self.relations = [{
-		relation: ""
-	}];
+	self.filteredFriends = ko.computed(function() {
+		//return self.friends();
+		return ko.utils.arrayFilter(self.friends(), function(item) {
+			var a =  self.relations()[item.relation];
+			if (typeof self.relationSearch() != 'undefined') {
+				return self.relationSearch().length == 0 || item.relation == self.relationSearch();
+			}
+			return true;
+
+		})
+	});
+
+	self.relationText = function(status) {
+		for (var key in self.relations()) {
+			if (self.relations()[key].status == status) {
+				return self.relations()[key].relation;
+			};
+		}
+
+	};
+
+	var bar = function(offset_tmp) {
+		var offset_tmp = 0;
+		return function () {
+				VK.Api.call(
+					'friends.get',
+					{
+						uid: self.friendPointer,
+						fields: 'sex, photo, followers_count, relation',
+						count: self.count,
+						offset: self.offset,
+						order: 'name'
+					},
+					function (data) {
+						offset_tmp = getUserProfileDataCallback(data, offset_tmp);
+					}
+				)
+			}
+
+	};
+	var a = bar();
+
 
    	self.getMoreFriends = function() {
-
-        VK.Api.call(
+	    a(0);
+        /*VK.Api.call(
 			'friends.get',
 			{
 				uid: self.friendPointer,
-				fields: 'sex, photo, followers_count',
+				fields: 'sex, photo, followers_count, relation',
 				count: self.count,
 				offset: self.offset,
 				order: 'name'
 			},
 			getUserProfileDataCallback
-		)
+		)*/
 
 	};
 
-	function getUserProfileDataCallback(data) {
+	function getUserProfileDataCallback(data, offset_tmp) {
 
 		if (data.error) {
 			self.errors.push(data.error);
-			return
+			self.offset = 0;
+			offset_tmp = 0;
+			return offset_tmp;
 		}
 
 		if (data.response && data.response.length > 0) {
@@ -104,19 +157,19 @@ function GirlFriendsViewModel() {
 
 				if (val.sex == 1) {
 
-					self.friendIds.push(val.uid);
-
 					var position = self.friends.binarySearch(val, 'followers_count', binarySearchCallback);
 
 					if (position != null) {
+						self.friendIds.push(val.uid);
 						self.friends.splice(position, 0, val);
 					}
 
-					// We have pulled another 50 friends so lets sort them and exit
+					// We have pulled another 50 friends
 					if ((self.friends().length % 50) == 0) {
 
 						self.offset += key+1;
-						return
+						offset_tmp += key+1;
+						return offset_tmp;
 					}
 				}
 
@@ -125,8 +178,10 @@ function GirlFriendsViewModel() {
 
 					self.friendPointer = self.friendIds.shift();
 					self.offset = 0;
-					self.getMoreFriends();
-
+					offset_tmp = 0;
+					//var b = bar(0);
+					var offset_second = a(0);
+					return offset_tmp;
 				}
 			}
 
@@ -134,6 +189,8 @@ function GirlFriendsViewModel() {
 		else {
 			self.friendPointer = self.friendIds.shift();
 			self.offset = 0;
+			offset_tmp = 0;
+			return offset_tmp;
 		}
 
 	}
