@@ -13,16 +13,32 @@ ko.observableArray.fn.binarySearch = function(find, field, comparator) {
 
 		// If the fields are equal check if the second parameter of object (F.x. id, uid, user_id... ) are equal too
 		if (comparison == 2) {
-			if (find.user_id == collection[i].user_id ||
-				(typeof collection[i+1] !== 'undefined' && find.user_id == collection[i+1].user_id)) {
 
-				return null;
+			var j = i + 1;
+			while (typeof collection[j] != 'undefined' && collection[j][field] == find[field]) {
+
+				if (find.user_id == collection[j].user_id) {
+					return null;
+				}
+				j++;
+
 			}
+
+			j = i;
+			while (typeof collection[j] != 'undefined' && collection[j][field] == find[field]) {
+
+				if (find.user_id == collection[j].user_id) {
+					return null;
+				}
+				j--;
+
+			}
+
 			return i+1;
 		}
-		if (comparison > 0 && high <= 0) return i;
-		if (comparison < 0) { low = i + 1; continue; };
-		if (comparison > 0) { high = i - 1; continue; };
+		if (comparison > 0 && high <= 0) {  return i; }
+		if (comparison < 0) { low = i + 1;  continue; }
+		if (comparison > 0) { high = i - 1; continue; }
 
         return i+1;
 	}
@@ -44,7 +60,7 @@ function binarySearchCallback(x, y, field, value) {
     }
 
     return ((x[field] > value) ? ((value > y[field]) ? 0 : -1) : 1);
-};
+}
 
 
 function Error(code, message) {
@@ -57,8 +73,6 @@ function GirlFriendsViewModel() {
 
 	var self = this;
 
-	self.offset = 0;
-	self.count = 0;
 	self.friendIds = [];
 	self.friendPointer = 0;
 	self.errors = ko.observableArray([]);
@@ -80,12 +94,11 @@ function GirlFriendsViewModel() {
 
 	self.filteredFriends = ko.computed(function() {
 		return ko.utils.arrayFilter(self.friends(), function(item) {
-			var a =  self.relations()[item.relation];
+
 			if (typeof self.relationSearch() != 'undefined') {
 				return self.relationSearch().length == 0 || item.relation == self.relationSearch();
 			}
 			return true;
-
 		})
 	});
 
@@ -97,62 +110,71 @@ function GirlFriendsViewModel() {
 		}
 	};
 
-   	self.getMoreFriends = function() {
-	    getMoreFriends();
+	self.getMoreFriends = function() {
+	    getMoreFriends(0);
 	};
 
-	function displayPage(items) {
-		var i, j;
-		for (i = 0;  i < items; i++) {
-			var friend = self.cachedGirls.shift();
-			var position = self.friends.binarySearch(friend, 'followers_count', binarySearchCallback);
+	var getFriendsByPage = function(itemsPerPage) {
 
-			if (position != null) {
-				self.friends.splice(position, 0, friend);
-			}
-			else {
-				console.log(friend.uid + ' = ' + friend.last_name);
-			}
-		}
-	}
+		return function getFriendsFromVK(offset) {
 
-	var getFriendsClosure = function() {
-		var offset = 0;
-
-		return function getFriendsFromVK() {
-			if (self.cachedGirls.length < 50) {
+			if (self.cachedGirls.length <= itemsPerPage) {
 				VK.Api.call(
 					'friends.get',
 					{
 						uid     : self.friendPointer,
 						fields  : 'sex, photo, followers_count, relation',
-						count   : self.count,
+						count   : 0,
 						offset  : 0,
 						order   : 'name'
 					},
 					function(data) {
-						getUserProfileDataCallback(data);
-						displayPage(50);
-					})
+						if (!data.error) {
+							getUserProfileDataCallback(data);
+							offset = displayPage(itemsPerPage, offset);
+							if (offset < itemsPerPage) {
+								getMoreFriends(offset);
+							}
+
+						}
+						else {
+							self.errors.push(data.error);
+							return false;
+						}
+					}
+				)
 			}
 			else {
-				displayPage(50);
+				offset = displayPage(itemsPerPage, offset);
 			}
-
-
 		}
-
 	};
 
-	var getMoreFriends = getFriendsClosure(0);
+	var getMoreFriends = getFriendsByPage(170);
+
+	function displayPage(itemsPerPage, offset) {
+
+		var count = self.cachedGirls.length;
+		for (var i = 0;  i < count; i++) {
+
+			var girl = self.cachedGirls.shift();
+			var position = self.friends.binarySearch(girl, 'followers_count', binarySearchCallback);
+
+			if (position != null) {
+				self.friends.splice(position, 0, girl);
+
+				offset += 1;
+
+				if ((self.friends().length % itemsPerPage) == 0) {
+					break;
+				}
+			}
+		}
+
+		return offset;
+	}
 
 	function getUserProfileDataCallback(data) {
-
-		if (data.error) {
-			self.errors.push(data.error);
-			offset = 0;
-			return offset;
-		}
 
 		if (data.response && data.response.length > 0) {
 
@@ -160,104 +182,34 @@ function GirlFriendsViewModel() {
 				key = parseInt(key);
 				var friend = data.response[key];
 
-				if (typeof friend.deactivated !== 'undefined' && (friend.deactivated == 'banned' || friend.deactivated == 'deleted'))
+				// Skip if user is banned
+				if (friend.hasOwnProperty('deactivated') && (friend.deactivated == 'banned' || friend.deactivated == 'deleted')) {
 					continue;
+				}
 
 				if (friend.sex == 1) {
 					self.cachedGirls.push(friend);
 					self.friendIds.push(friend.uid);
-
-					// If we have pulled another 50 friends
-					/*if ((self.friends().length % 50) == 0) {
-						self.offset += key+1;
-						offset += key+1;
-						return offset;
-					}*/
-				}
-
-				// If it was last iteration we will make new request for friends recursively
-				if (data.response.length == (last=key+1)) {
-
-					self.friendPointer = self.friendIds.shift();
-					//var getMoreFriends = getFriendsClosure(offset);
-					//getMoreFriends();
-					return;
 				}
 			}
 		}
-		else {
-			self.friendPointer = self.friendIds.shift();
-			offset = 0;
-			return offset;
-		}
+		self.friendPointer = self.friendIds.shift();
 
 	}
 
 	self.totalDirectFriends = ko.computed(function() {
 		return 0;
-		var total = 0;
+		/*var total = 0;
 		for (var i = 0; i < self.friends().length; i++) {
 			if (self.friends()[i].friendOf() == 'mine') {
 				total++;
 			}
 		}
-		return total;
+		return total;*/
 	});
 
 }
 
-function VKViewModel() {
-
-	var self = this;
-	var baseURL = window.location.protocol + '//' + window.location.hostname + window.location.pathname;
-
-    self.currentUser = ko.observable();
-
-    self.init = ko.computed(function () {
-
-		VK.init({
-			apiId: 3709148
-		});
-
-		function authInfo(response) {
-			if (response.session) {
-                self.currentUser(response.session.mid);
-			} else {
-				alert('not auth');
-			}
-		}
-		VK.Auth.getLoginStatus(authInfo);
-		VK.UI.button('login_button');
-
-	});
-
-	self.doLogin = function() {
-		VK.Auth.login(function(response) {
-			self.currentUser(response.session.user.id);
-        }, VK.access.FRIENDS);
-	};
-
-	self.doLogout = function() {
-		VK.Auth.logout(function(response) {
-			window.location = baseURL;
-			//self.currentUser(null);
-		});
-	};
-
-
-    /*self.isUserLogged = ko.computed(function() {
-         var isLogged = VK.Auth.getLoginStatus(function(response) {
-         if (response.status == 'connected') {
-            return self.isUserLogged(response.session);
-         }
-         else {
-            return false;
-         }
-         });
-         return isLogged;
-     }, self);*/
-
-}
 ko.bindingHandlers.stopBinding = {
 	init: function() {
 		return { controlsDescendantBindings: true };
@@ -267,11 +219,9 @@ ko.bindingHandlers.stopBinding = {
 $(document).ready(function () {
 
 	ko.applyBindings(new GirlFriendsViewModel(), document.html);
-	ko.applyBindings(new VKViewModel(), document.getElementById('openapi_block'));
+	ko.applyBindings(new VKViewModel(3709148), document.getElementById('openapi_block'));
 
 });
-
-
 
 $(window).scroll(function () {
 
