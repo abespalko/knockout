@@ -116,7 +116,7 @@ function GirlFriendsViewModel() {
 
 	var getFriendsByPage = function(itemsPerPage) {
 
-		return function getFriendsFromVK(offset) {
+		return function(offset) {
 
 			if (self.cachedGirls.length <= itemsPerPage) {
 				VK.Api.call(
@@ -124,18 +124,16 @@ function GirlFriendsViewModel() {
 					{
 						uid     : self.friendPointer,
 						fields  : 'sex, photo, followers_count, relation',
-						count   : 0,
-						offset  : 0,
 						order   : 'name'
 					},
 					function(data) {
 						if (!data.error) {
 							getUserProfileDataCallback(data);
 							offset = displayPage(itemsPerPage, offset);
+
 							if (offset < itemsPerPage) {
 								getMoreFriends(offset);
 							}
-
 						}
 						else {
 							self.errors.push(data.error);
@@ -150,7 +148,7 @@ function GirlFriendsViewModel() {
 		}
 	};
 
-	var getMoreFriends = getFriendsByPage(170);
+	var getMoreFriends = getFriendsByPage(10);
 
 	function displayPage(itemsPerPage, offset) {
 
