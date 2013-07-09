@@ -95,10 +95,28 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="GirlFriendsModel.js" pinned="false" current="true" current-in-tab="true">
+      <file leaf-file-name="GirlFriendsModel.js" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/js/GirlFriendsModel.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="13" column="14" selection-start="377" selection-end="377" vertical-scroll-proportion="0.3162612">
+            <state line="0" column="0" selection-start="0" selection-end="4587" vertical-scroll-proportion="-0.0">
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="GirlFriendsModelSrc.js" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/jasmine/src/GirlFriendsModelSrc.js">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="89" column="32" selection-start="2550" selection-end="2566" vertical-scroll-proportion="0.0">
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="GirlFriendsModelSpec.js" pinned="false" current="true" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/jasmine/spec/GirlFriendsModelSpec.js">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="6" column="26" selection-start="144" selection-end="144" vertical-scroll-proportion="0.071788415">
               <folding />
             </state>
           </provider>
@@ -126,6 +144,8 @@
         <option value="$PROJECT_DIR$/js/index.js" />
         <option value="$PROJECT_DIR$/index.html" />
         <option value="$PROJECT_DIR$/js/GirlFriendsModel.js" />
+        <option value="$PROJECT_DIR$/jasmine/src/GirlFriendsModelSrc.js" />
+        <option value="$PROJECT_DIR$/jasmine/spec/GirlFriendsModelSpec.js" />
       </list>
     </option>
   </component>
@@ -191,6 +211,56 @@
             </PATH_ELEMENT>
             <PATH_ELEMENT>
               <option name="myItemId" value="js" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="knockout" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="knockout" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="jasmine" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="knockout" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="knockout" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="jasmine" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="src" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="knockout" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="knockout" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="jasmine" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="spec" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
           </PATH>
@@ -305,13 +375,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/js/VKViewModel.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="7" column="41" selection-start="228" selection-end="228" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/js/knockout-2.2.1.js">
       <provider selected="true" editor-type-id="text-editor">
         <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0">
@@ -330,9 +393,30 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/js/VKViewModel.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="7" column="41" selection-start="228" selection-end="228" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/js/GirlFriendsModel.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="13" column="14" selection-start="377" selection-end="377" vertical-scroll-proportion="0.3162612">
+        <state line="0" column="0" selection-start="0" selection-end="4587" vertical-scroll-proportion="-0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/jasmine/src/GirlFriendsModelSrc.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="89" column="32" selection-start="2550" selection-end="2566" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/jasmine/spec/GirlFriendsModelSpec.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="6" column="26" selection-start="144" selection-end="144" vertical-scroll-proportion="0.071788415">
           <folding />
         </state>
       </provider>

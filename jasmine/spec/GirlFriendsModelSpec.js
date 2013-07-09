@@ -48,13 +48,13 @@ describe("girlFriendsModel", function() {
 		expect(userRelation).toBeDefined();
 		expect(sex).toBeDefined();
 
-		expect(girlFriendsModel.relationText(userRelation, sex)).toContain('не женат');
-		expect(girlFriendsModel.relationText(2, 1)).toContain('есть друг');
-		expect(girlFriendsModel.relationText(3, 1)).toContain('помолвлена');
-		expect(girlFriendsModel.relationText(4, 1)).toContain('замужем');
-		expect(girlFriendsModel.relationText(5, 1)).toContain('всё сложно');
-		expect(girlFriendsModel.relationText(6, 2)).toContain('в активном поиске');
-		expect(girlFriendsModel.relationText(7, 1)).toContain('влюблена');
+		expect(girlFriendsModel.relationText(userRelation)).toContain('не женат');
+		expect(girlFriendsModel.relationText(2)).toContain('есть друг/есть подруга');
+		expect(girlFriendsModel.relationText(3)).toContain('помолвлен/помолвлена');
+		expect(girlFriendsModel.relationText(4)).toContain('женат/замужем');
+		expect(girlFriendsModel.relationText(5)).toContain('всё сложно');
+		expect(girlFriendsModel.relationText(6)).toContain('в активном поиске');
+		expect(girlFriendsModel.relationText(7)).toContain('влюблен/влюблена');
 
 	});
 
@@ -76,18 +76,6 @@ describe("girlFriendsModel", function() {
 
 		expect(girlFriendsModel.errors().length).not.toBeGreaterThan(0);
 
-	});
-
-
-
-	// demonstrates use of spies to intercept and test method calls
-	xit("tells the current song if the user has made it a favorite", function() {
-		spyOn(song, 'persistFavoriteStatus');
-
-		player.play(song);
-		player.makeFavorite();
-
-		expect(song.persistFavoriteStatus).toHaveBeenCalledWith(true);
 	});
 
 });
