@@ -19,7 +19,6 @@ function VKViewModel(appId) {
 			}
 		}
 		VK.Auth.getLoginStatus(authInfo);
-		VK.UI.button('login_button');
 
 	});
 

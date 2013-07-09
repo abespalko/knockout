@@ -11,7 +11,7 @@ ko.observableArray.fn.binarySearch = function(find, field, comparator) {
 		i = Math.floor((low + high) / 2);
 		comparison = comparator(collection[i], collection[i+1], field, find[field]);
 
-		// If the fields are equal check if the second parameter of object (F.x. id, uid, user_id... ) are equal too
+		// If fields are equal check if the second parameter of object (F.x. id, uid, user_id... ) are equal too
 		if (comparison == 2) {
 
 			var j = i + 1;
@@ -81,20 +81,19 @@ function GirlFriendsViewModel() {
 
 	self.relations = ko.observableArray([
 		{ status: 0, relation: "не указан" },
-		{ status: 1, relation: "не замужем" },
-		{ status: 2, relation: "есть друг" },
-		{ status: 3, relation: "помолвлена" },
-		{ status: 4, relation: "замужем" },
+		{ status: 1, relation: "не замужем/не женат" },
+		{ status: 2, relation: "есть друг/есть подруга" },
+		{ status: 3, relation: "помолвлен/помолвлена" },
+		{ status: 4, relation: "женат/замужем" },
 		{ status: 5, relation: "всё сложно" },
 		{ status: 6, relation: "в активном поиске" },
-		{ status: 7, relation: "влюблена" }
+		{ status: 7, relation: "влюблен/влюблена" }
 	]);
 
 	self.relationSearch = ko.observable();
 
 	self.filteredFriends = ko.computed(function() {
 		return ko.utils.arrayFilter(self.friends(), function(item) {
-
 			if (typeof self.relationSearch() != 'undefined') {
 				return self.relationSearch().length == 0 || item.relation == self.relationSearch();
 			}
@@ -108,6 +107,7 @@ function GirlFriendsViewModel() {
 				return self.relations()[key].relation;
 			}
 		}
+		return self.relations()[0].relation;
 	};
 
 	self.getMoreFriends = function() {
@@ -118,7 +118,7 @@ function GirlFriendsViewModel() {
 
 		return function(offset) {
 
-			if (self.cachedGirls.length <= itemsPerPage) {
+			if (self.cachedGirls.length <= itemsPerPage*2) {
 				VK.Api.call(
 					'friends.get',
 					{
@@ -148,7 +148,7 @@ function GirlFriendsViewModel() {
 		}
 	};
 
-	var getMoreFriends = getFriendsByPage(10);
+	var getMoreFriends = getFriendsByPage(40);
 
 	function displayPage(itemsPerPage, offset) {
 
@@ -195,17 +195,6 @@ function GirlFriendsViewModel() {
 
 	}
 
-	self.totalDirectFriends = ko.computed(function() {
-		return 0;
-		/*var total = 0;
-		for (var i = 0; i < self.friends().length; i++) {
-			if (self.friends()[i].friendOf() == 'mine') {
-				total++;
-			}
-		}
-		return total;*/
-	});
-
 }
 
 ko.bindingHandlers.stopBinding = {
@@ -214,20 +203,3 @@ ko.bindingHandlers.stopBinding = {
 	}
 };
 
-$(document).ready(function () {
-
-	ko.applyBindings(new GirlFriendsViewModel(), document.html);
-	ko.applyBindings(new VKViewModel(3709148), document.getElementById('openapi_block'));
-
-});
-
-$(window).scroll(function () {
-
-	var el = document.getElementById('show_more');
-	var pos = el.offsetTop;
-	if (parseInt($(window).scrollTop()) + 1200 >=  pos) {
-		$('button.more-friends').trigger('click');
-		$('#show_more_progress').show();
-	}
-
-});
